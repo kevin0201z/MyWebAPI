@@ -1,0 +1,2 @@
+# MyWebAPI
+.netcore webapi
