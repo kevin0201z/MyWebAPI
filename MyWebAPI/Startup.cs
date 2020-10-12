@@ -26,6 +26,8 @@ namespace MyWebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            //Swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -75,7 +77,8 @@ namespace MyWebAPI
                 });
                 #endregion
             });
-
+            
+            //JWT
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -94,6 +97,9 @@ namespace MyWebAPI
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("JWTtestJWTtestJWTtest"))
                 };
             });
+
+            //øÁ”Ú
+            services.ConfigureCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -124,7 +130,7 @@ namespace MyWebAPI
 
             });
 
-            
+            app.UseCors("CorsPolicy");//øÁ”Ú 
         }
     }
 }
