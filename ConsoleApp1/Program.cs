@@ -169,6 +169,8 @@ namespace ConsoleApp1
 
                     response.EnsureSuccessStatusCode();//用来抛异常的
                     strReturn = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(strReturn);
+
                 }
 
             }
@@ -188,7 +190,7 @@ namespace ConsoleApp1
             try
             {
                 var str = JsonConvert.SerializeObject(new LoginInput() { 
-                    Username = "abc",
+                    Username = "admin",
                     Password = "123" 
                 });
 
