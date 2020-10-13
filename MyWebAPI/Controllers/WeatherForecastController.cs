@@ -52,5 +52,11 @@ namespace MyWebAPI.Controllers
         {
             return x * 10 + y - 1;
         }
+
+        [HttpGet("{gid}", Name = "OwnerById")]
+        public IActionResult GetById(int gid)
+        {
+            return Ok(new { thing = gid + 1 });
+        }
     }
 }

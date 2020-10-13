@@ -137,7 +137,7 @@ namespace ConsoleApp1
             {
                 using (var client = new HttpClient())
                 {
-                    HttpResponseMessage response = await client.GetAsync(url);//改成自己的
+                    HttpResponseMessage response = await client.GetAsync(url);
 
                     response.EnsureSuccessStatusCode();//用来抛异常的
                     string responseBody = await response.Content.ReadAsStringAsync();
@@ -146,7 +146,7 @@ namespace ConsoleApp1
             }
             catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
         }
 
@@ -199,7 +199,7 @@ namespace ConsoleApp1
 
                 using (var client = new HttpClient())
                 {
-                    HttpResponseMessage response = await client.PostAsync(url, content);//改成自己的                  
+                    HttpResponseMessage response = await client.PostAsync(url, content);                  
                     string responseBody = await response.Content.ReadAsStringAsync();
                     //response.EnsureSuccessStatusCode();//用来抛异常的
                     if (response.IsSuccessStatusCode)
