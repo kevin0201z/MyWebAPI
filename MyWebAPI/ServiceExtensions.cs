@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MyWebAPI.Model;
 using System;
 using System.IO;
 using System.Reflection;
@@ -90,7 +91,7 @@ namespace MyWebAPI
         /// JWT验证
         /// </summary>
         /// <param name="services"></param>
-        public static void ConfigureJWT(this IServiceCollection services)
+        public static void ConfigureJWT(this IServiceCollection services, TokenManagement token)
         {
             services.AddAuthentication(options =>
             {
@@ -105,9 +106,9 @@ namespace MyWebAPI
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidAudience = "www.cnblogs.com",
-                    ValidIssuer = "www.cnblogs.com",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("JWTtestJWTtestJWTtest"))
+                    ValidAudience = token.Audience,
+                    ValidIssuer = token.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(token.Secret))
                 };
             });
         }

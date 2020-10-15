@@ -1,20 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using MyWebAPI.Model;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MyWebAPI.Controllers
 {
     [Route("api/[controller]")]
     public class AuthenticateController : Controller
     {
+        public readonly TokenManagement _token;
+        /// <summary>
+        /// 读取配置
+        /// </summary>
+        /// <param name="token"></param>
+        public AuthenticateController(IOptions<TokenManagement> token)
+        {
+            _token = token.Value;
+        }
+
         [HttpPost]
         [Route("login")]
         public IActionResult Login([FromBody] LoginInput input)
@@ -31,11 +39,11 @@ namespace MyWebAPI.Controllers
             };
             IdentityModelEventSource.ShowPII = true;
             //签名秘钥 可以放到json文件中
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("JWTtestJWTtestJWTtest"));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_token.Secret));
 
             var token = new JwtSecurityToken(
-                   issuer: "www.cnblogs.com",
-                   audience: "www.cnblogs.com",
+                   issuer: _token.Issuer,
+                   audience: _token.Audience,
                    expires: DateTime.Now.AddDays(1),
                    claims: authClaims,
                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)

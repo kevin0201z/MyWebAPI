@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyWebAPI.Model;
 
 namespace MyWebAPI
 {
@@ -21,8 +22,11 @@ namespace MyWebAPI
             services.AddControllers();
             //Swagger
             services.ConfigureSwagger();
+            //ÃÌº”≈‰÷√
+            services.Configure<TokenManagement>(Configuration.GetSection("tokenManagement"));
+            var token = Configuration.GetSection("tokenManagement").Get<TokenManagement>();
             //JWT
-            services.ConfigureJWT();
+            services.ConfigureJWT(token);
             //øÁ”Ú
             services.ConfigureCors();
         }
