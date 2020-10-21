@@ -91,6 +91,7 @@ namespace MyWebAPI
         /// JWT验证
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="token"></param>
         public static void ConfigureJWT(this IServiceCollection services, TokenManagement token)
         {
             services.AddAuthentication(options =>

@@ -13,7 +13,7 @@ namespace MyWebAPI.Controllers
     [Route("api/[controller]")]
     public class AuthenticateController : Controller
     {
-        public readonly TokenManagement _token;
+        private readonly TokenManagement _token;
         /// <summary>
         /// 读取配置
         /// </summary>
