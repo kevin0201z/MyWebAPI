@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyWebAPI.Model;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -15,6 +19,11 @@ namespace MyWebAPI
     /// </summary>
     public static class ServiceExtensions
     {
+        /// <summary>
+        /// Api版本信息
+        /// </summary>
+        public static IApiVersionDescriptionProvider provider;
+
         /// <summary>
         /// 跨域
         /// </summary>
@@ -39,23 +48,36 @@ namespace MyWebAPI
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                // 多版本控制
+                foreach (var item in provider.ApiVersionDescriptions)
                 {
-                    Title = "My API",
-                    Version = "v1",
-                    Description = "API文档描述",
-                    Contact = new OpenApiContact
+                    // 添加文档信息
+                    c.SwaggerDoc(item.GroupName, new OpenApiInfo
                     {
-                        Email = "1234567@qq.com",
-                        Name = "测试项目",
-                        //Url = new Uri("http://t.abc.com/")
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "BROOKE许可证",
-                        //Url = new Uri("http://t.abc.com/")
-                    }
+                        Title = "CoreWebApi",
+                        Version = item.ApiVersion.ToString(),
+                        Description = "ASP.NET CORE WebApi",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Abc",
+                            Email = "abc@gmail.com",
+                            Url = new Uri("http://t.abc.com/")
+                        }
+                    });
+                }
+                // 在 Swagger 文档显示的 API 地址中将版本信息参数替换为实际的版本号
+                c.DocInclusionPredicate((version, apiDescription) =>
+                {
+                    if (!version.Equals(apiDescription.GroupName))
+                        return false;
+
+                    var values = apiDescription.RelativePath
+                        .Split('/')
+                        .Select(v => v.Replace("v{version}", apiDescription.GroupName)); apiDescription.RelativePath = string.Join("/", values);
+                    return true;
                 });
+
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
@@ -111,6 +133,38 @@ namespace MyWebAPI
                     ValidIssuer = token.Issuer,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(token.Secret))
                 };
+            });
+        }
+
+        public static void ConfigureApiVersion(this IServiceCollection services)
+        {
+            services.AddApiVersioning(option =>
+            {
+                // 可选，为true时API返回支持的版本信息
+                option.ReportApiVersions = true;
+                // 不提供版本时，默认为1.0
+                option.AssumeDefaultVersionWhenUnspecified = true;
+                // 请求中未指定版本时默认为1.0
+                option.DefaultApiVersion = new ApiVersion(1, 0);
+            }).AddVersionedApiExplorer(option =>
+            {　　　　　　　　　　// 版本名的格式：v+版本号
+                option.GroupNameFormat = "'v'V";
+                option.AssumeDefaultVersionWhenUnspecified = true;
+            });
+
+            provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+        }
+
+        public static void ConfigureUseSwaggerUI(this IApplicationBuilder app)
+        {
+            app.UseSwaggerUI(c =>
+            {
+                foreach (var item in provider.ApiVersionDescriptions)
+                {
+                    c.SwaggerEndpoint($"/swagger/{item.GroupName}/swagger.json", "CoreAPI" + item.ApiVersion);
+                }
+
+                c.RoutePrefix = "";// 如果设为空，访问路径就是根域名/index.html，设置为空，表示直接在根域名访问；想换一个路径，直接写名字即可，比如直接写c.RoutePrefix = "swagger"; 则访问路径为 根域名/swagger/index.html
             });
         }
     }

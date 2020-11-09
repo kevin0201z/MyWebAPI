@@ -157,7 +157,7 @@ namespace ConsoleApp1
         static async void GetParaClient(string para)
         {
             string strReturn = "";
-            string url = "http://localhost:29693/api/WeatherForecast";
+            string url = "http://localhost:29693/api/v2/WeatherForecast";
 
             try
             {
@@ -185,7 +185,7 @@ namespace ConsoleApp1
         /// </summary>
         static async void PostClient()
         {
-            string url = "http://localhost:29693/api/Authenticate/login";
+            string url = "http://localhost:29693/api/v1/Authenticate/login";
 
             try
             {
