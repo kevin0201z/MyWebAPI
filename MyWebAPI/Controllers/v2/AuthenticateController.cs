@@ -11,7 +11,7 @@ using System.Text;
 namespace MyWebAPI.Controllers.v2
 {
     [ApiController]
-    [ApiVersion("2.0")]
+    //[ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class AuthenticateController : ControllerBase
     {
@@ -27,11 +27,12 @@ namespace MyWebAPI.Controllers.v2
 
         [HttpPost]
         [Route("login")]
+        [ApiVersion("2.0")]
         public IActionResult Login([FromBody] LoginInput input)
         {
             //从数据库验证用户名，密码 
             //验证通过 否则 返回Unauthorized
-            if (input.Username != "admin1")
+            if (input.Username != "admin")
                 return BadRequest("用户名或密码错误");
 
             //创建claim

@@ -195,7 +195,7 @@ namespace ConsoleApp1
                 });
 
                 HttpContent content = new StringContent(str);
-                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
                 using (var client = new HttpClient())
                 {
